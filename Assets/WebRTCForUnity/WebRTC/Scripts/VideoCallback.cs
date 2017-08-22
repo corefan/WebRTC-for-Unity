@@ -6,8 +6,12 @@ using System;
 
 namespace iBicha
 {
-	public class VideoCallback : AndroidJavaProxy {
-		public event Action<AndroidJavaObject, AndroidJavaObject> OnVideoCapturerStarted;
+	public class VideoCallback
+#if UNITY_ANDROID && !UNITY_EDITOR
+        : AndroidJavaProxy
+#endif
+    {
+        public event Action<AndroidJavaObject, AndroidJavaObject> OnVideoCapturerStarted;
 		public event Action<Texture> OnTexture;
 		public event Action OnVideoCapturerStopped;
 		public event Action<string> OnVideoCapturerError;
@@ -39,9 +43,12 @@ namespace iBicha
 
 		private float resolution = 1f;
 
-		public VideoCallback (float resolution = 1f) : base ("com.ibicha.webrtc.VideoCallback")
-		{
-			this.resolution = Mathf.Clamp01(resolution);
+		public VideoCallback (float resolution = 1f)
+#if UNITY_ANDROID && !UNITY_EDITOR
+            : base ("com.ibicha.webrtc.VideoCallback")
+#endif
+        {
+            this.resolution = Mathf.Clamp01(resolution);
 		}
 
 		public void onVideoCapturerStarted (AndroidJavaObject videoCapturer, AndroidJavaObject videoTrack)
@@ -60,7 +67,7 @@ namespace iBicha
 
 			ThreadUtils.RunOnUpdate (() => {
 				IntPtr textureId = new IntPtr (textureName);
-				if (nativeTexture!= null || this.width != width || this.height != height || this.rotation != rotation) {
+				if (nativeTexture == null || this.width != width || this.height != height || this.rotation != rotation) {
 					CleanUp();
 					this.width = width;
 					this.height = height;

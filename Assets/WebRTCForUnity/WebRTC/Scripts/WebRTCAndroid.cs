@@ -5,15 +5,17 @@ using UnityEngine;
 namespace iBicha
 {
 	public class WebRTCAndroid : WebRTC {
-		[RuntimeInitializeOnLoadMethod]
-		static void setUnityContext()
+        [RuntimeInitializeOnLoadMethod]
+        static void setUnityContext()
 		{
+#if UNITY_ANDROID && !UNITY_EDITOR
 			ThreadUtils.RunOnUpdate (() => {
 				UnityEGLContext_JavaClass.CallStatic ("setUnityContext");
 			});
-		}
+#endif
+        }
 
-		public static void KillFrame(AndroidJavaObject i420Frame) {
+        public static void KillFrame(AndroidJavaObject i420Frame) {
 			VideoRenderer_JavaClass.CallStatic ("renderFrameDone", i420Frame);
 		}
 

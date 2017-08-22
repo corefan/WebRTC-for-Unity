@@ -32,8 +32,8 @@ public class WebRTC  {
         return null;
     }
 
-    public static void StartScreenCapture(VideoCallback callback) {
-        VideoCapture.getInstance().StartScreenCapture(getMainActivity(), callback);
+    public static void StartScreenCapture(VideoCallback callback, float resolution) {
+        VideoCapture.getInstance().StartScreenCapture(getMainActivity(), callback, resolution);
     }
 
     public static void StartCameraCapture(boolean fontCamera, VideoCallback callback) {

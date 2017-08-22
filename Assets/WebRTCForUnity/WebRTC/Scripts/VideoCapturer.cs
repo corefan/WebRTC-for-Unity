@@ -73,7 +73,7 @@ namespace iBicha
 				break;
 			case CaptureSource.Screen:
 				ThreadUtils.RunOnUpdate (()=>{
-					WebRTCAndroid.WebRTC_JavaClass.CallStatic("StartScreenCapture", _callback);
+					WebRTCAndroid.WebRTC_JavaClass.CallStatic("StartScreenCapture", _callback, 1f);
 				});
 				break;
 			case CaptureSource.RenderTexture:

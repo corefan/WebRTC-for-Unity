@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import org.webrtc.Camera1Enumerator;
 import org.webrtc.CameraEnumerator;
+import org.webrtc.CameraVideoCapturer;
 import org.webrtc.Logging;
 import org.webrtc.ScreenCapturerAndroid;
 import org.webrtc.VideoCapturer;
@@ -55,8 +56,8 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
     }
 
 
-    void StartScreenCapture(Activity mainActivity, VideoCallback callback) {
-        StartScreenCapture(mainActivity, callback, 0, 0, 0);
+    void StartScreenCapture(Activity mainActivity, VideoCallback callback, float resolution) {
+        StartScreenCapture(mainActivity, callback, 0, 0, 0, resolution);
     }
 
     static void StartCameraCapture(Activity mainActivity, boolean frontCamera, final VideoCallback callback, int videoWidth, int videoHeight, int videoFps) {
@@ -74,7 +75,7 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
 
     }
 
-    void StartScreenCapture(Activity mainActivity, VideoCallback callback, int videoWidth, int videoHeight, int videoFps) {
+    void StartScreenCapture(Activity mainActivity, VideoCallback callback, int videoWidth, int videoHeight, int videoFps, float resolution) {
         if (mainActivity == null) {
             callback.onVideoCapturerError("Could not get main activity.");
             return;
@@ -93,8 +94,11 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
         if (videoFps == 0) {
             videoFps = 30;
         }
-        this.videoWidth = videoWidth;
-        this.videoHeight = videoHeight;
+
+        resolution = Math.max(0.01f, Math.min(1f, resolution));
+
+        this.videoWidth = (int)(videoWidth * resolution);
+        this.videoHeight = (int)(videoHeight * resolution);
         this.videoFps = videoFps;
 
         Log.d(TAG, "Got size: " + videoWidth + "x" + videoHeight);
@@ -109,7 +113,7 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
 
 
 
-    private static VideoCapturer createCameraCapturer(Context context, boolean frontCamera) {
+    private static CameraVideoCapturer createCameraCapturer(Context context, boolean frontCamera) {
         CameraEnumerator enumerator = new Camera1Enumerator(WebRTC.HW_ACCELERATE);// new Camera2Enumerator(context);
         final String[] deviceNames = enumerator.getDeviceNames();
 
@@ -118,8 +122,7 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
         for (String deviceName : deviceNames) {
             if ((enumerator.isFrontFacing(deviceName) && frontCamera) || (enumerator.isBackFacing(deviceName) && !frontCamera)) {
                 Logging.d(TAG, "Creating front facing camera capturer.");
-                VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
-
+                CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
                 if (videoCapturer != null) {
                     return videoCapturer;
                 }
@@ -130,7 +133,7 @@ public class VideoCapture implements ActivityResultHelper.ActivityResultListener
         Logging.d(TAG, "Looking for other cameras.");
         for (String deviceName : deviceNames) {
             Logging.d(TAG, "Creating other camera capturer.");
-            VideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
+            CameraVideoCapturer videoCapturer = enumerator.createCapturer(deviceName, null);
             if (videoCapturer != null) {
                 return videoCapturer;
             }
