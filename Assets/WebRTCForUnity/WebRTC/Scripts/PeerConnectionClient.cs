@@ -6,8 +6,8 @@ using System;
 namespace iBicha
 {
 	public class PeerConnectionClient {
-		public event Action OnConnected;
-		public event Action OnDisconnected;
+		public event Action Connected;
+		public event Action Disconnected;
 
 	
 		public List<VideoCapturer.CaptureSource> VideoSources { get;}

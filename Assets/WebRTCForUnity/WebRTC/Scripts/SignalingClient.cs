@@ -6,7 +6,14 @@ namespace iBicha
 {
 	public abstract class SignalingClient {
 
-		public abstract bool SendMessage (Object data);
+		public delegate void OnJoinedDelegate (string roomId, string userId);
+		public event OnJoinedDelegate Joined;
+
+		public abstract bool JoinRoom (string roomId, string userId = null);
+
+		public abstract bool LeaveRoom (string roomId);
+
+		public abstract bool SendMessage (string message);
 
 		public abstract bool SendOfferSDP (SessionDescription sdp);
 
